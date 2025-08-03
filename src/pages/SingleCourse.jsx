@@ -1,13 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
-// ✅ Sample course data
+// ✅ Added prices to each course
 const courseData = {
   "frontend-bootcamp": {
     title: "Frontend Bootcamp",
     level: "Beginner",
     description: "Learn HTML, CSS, and JavaScript from scratch while building real projects.",
+    price: 10000,
     syllabus: [
       "Introduction to Web Development",
       "HTML & CSS Fundamentals",
@@ -20,6 +21,7 @@ const courseData = {
     title: "Landing Page Masterclass",
     level: "Intermediate",
     description: "Create stunning, high-converting landing pages with Tailwind CSS & React.",
+    price: 12000,
     syllabus: [
       "Design Principles for Landing Pages",
       "Using Tailwind for Fast Styling",
@@ -32,6 +34,7 @@ const courseData = {
     title: "React Essentials",
     level: "Intermediate",
     description: "Master React fundamentals and build scalable frontend applications.",
+    price: 15000,
     syllabus: [
       "React Basics & JSX",
       "State & Props",
@@ -44,6 +47,7 @@ const courseData = {
     title: "Advanced React & APIs",
     level: "Advanced",
     description: "Learn advanced patterns and API integrations to build powerful apps.",
+    price: 20000,
     syllabus: [
       "Context API & Custom Hooks",
       "Authentication & Protected Routes",
@@ -54,16 +58,29 @@ const courseData = {
   }
 };
 
+// ✅ Load Flutterwave script once
+const loadFlutterwaveScript = () => {
+  if (!document.querySelector(`script[src="https://checkout.flutterwave.com/v3.js"]`)) {
+    const script = document.createElement("script");
+    script.src = "https://checkout.flutterwave.com/v3.js";
+    script.async = true;
+    document.body.appendChild(script);
+  }
+};
+
 export default function SingleCourse() {
   const { id } = useParams();
   const navigate = useNavigate();
-
   const course = courseData[id];
+
+  useEffect(() => {
+    loadFlutterwaveScript();
+  }, []);
 
   if (!course) {
     return (
       <div className="text-center text-white pt-32">
-        <h2 className="text-3xl mb-4">❌ Course Not Found</h2>
+        <h2 className="text-3xl mb-4 text-red-800">❌ Course Not Found</h2>
         <button
           onClick={() => navigate("/courses")}
           className="px-4 py-2 bg-[#39FF14] text-black rounded-lg font-semibold"
@@ -73,6 +90,37 @@ export default function SingleCourse() {
       </div>
     );
   }
+
+  // ✅ Flutterwave Payment Handler
+  const handlePayment = () => {
+    if (!window.FlutterwaveCheckout) {
+      alert("Flutterwave is not loaded yet. Please refresh.");
+      return;
+    }
+
+    window.FlutterwaveCheckout({
+      public_key: "FLWPUBK_TEST-xxxxxxxxxxxxxxxxxx", // ✅ Replace with your real key
+      tx_ref: Date.now(),
+      amount: course.price,
+      currency: "NGN",
+      customer: {
+        email: "user@example.com", // ✅ replace with logged-in user email
+        name: "John Doe",
+      },
+      customizations: {
+        title: "Course Payment",
+        description: `Payment for ${course.title}`,
+        logo: "/favicon.jpg",
+      },
+      callback: function (response) {
+        console.log(response);
+        alert("✅ Payment successful!");
+      },
+      onclose: function () {
+        alert("❌ Payment closed.");
+      },
+    });
+  };
 
   return (
     <div className="bg-[#0A0A0A] text-white min-h-screen pt-24 px-8">
@@ -122,14 +170,14 @@ export default function SingleCourse() {
         ))}
       </ul>
 
-      {/* ✅ Join CTA */}
+      {/* ✅ Flutterwave Pay Button */}
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        onClick={() => alert("🚀 Enrollment process will be added soon!")}
+        onClick={handlePayment}
         className="px-6 py-3 bg-[#39FF14] text-black rounded-lg font-bold text-lg"
       >
-        Join Now →
+        Pay ₦{course.price} → 
       </motion.button>
     </div>
   );

@@ -1,26 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { FaBars, FaTimes } from "react-icons/fa";
+import { FaBars, FaTimes, FaUser, FaSignOutAlt } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // ✅ Auth state
   const navigate = useNavigate();
   const location = useLocation();
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
-  // Add shadow on scroll
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Smooth scroll for sections on Home
   const handleScrollTo = (id) => {
     if (location.pathname !== "/") {
-      navigate("/"); // go to Home first
+      navigate("/");
       setTimeout(() => scrollToSection(id), 100);
     } else {
       scrollToSection(id);
@@ -33,7 +32,17 @@ export default function Navbar() {
     if (section) section.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Links setup
+  // ✅ Login & Logout simulation
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+    navigate("/profile"); // (later you can create a profile page)
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    navigate("/");
+  };
+
   const links = [
     { name: "Home", scroll: true },
     { name: "Courses", path: "/course" },
@@ -47,7 +56,7 @@ export default function Navbar() {
         scrolled ? "bg-[#0A0A0A]/95 shadow-md shadow-[#00D4FF]/10 border-b border-gray-800" : "bg-[#0A0A0A]"
       }`}
     >
-      {/* Logo */}
+      {/* ✅ Logo */}
       <h1
         className="text-2xl font-bold text-[#00D4FF] cursor-pointer"
         onClick={() => handleScrollTo("home")}
@@ -55,7 +64,7 @@ export default function Navbar() {
         DoyinSpace
       </h1>
 
-      {/* Desktop Links */}
+      {/* ✅ Desktop Links */}
       <ul className="hidden md:flex space-x-6 text-gray-300">
         {links.map((link, i) => (
           <li
@@ -70,15 +79,24 @@ export default function Navbar() {
         ))}
       </ul>
 
-      {/* CTA */}
-      <button
-        onClick={() => navigate("/contact")}
-        className="hidden md:block px-4 py-2 rounded-lg bg-[#39FF14] text-black font-semibold hover:scale-105 transition"
-      >
-        Join Now
-      </button>
+      {/* ✅ Auth Icon Behavior */}
+      {!isLoggedIn ? (
+        <button
+          onClick={() => navigate("/join")} // ✅ Go to SignUp if not logged in
+          className="hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-[#39FF14] text-black hover:scale-110 transition"
+        >
+          <FaUser size={18} />
+        </button>
+      ) : (
+        <button
+          onClick={handleLogout} // ✅ Show Logout if logged in
+          className="hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-red-500 text-white hover:scale-110 transition"
+        >
+          <FaSignOutAlt size={18} />
+        </button>
+      )}
 
-      {/* Mobile Menu */}
+      {/* ✅ Mobile Menu */}
       <div className="md:hidden text-2xl text-[#00D4FF] cursor-pointer" onClick={toggleMenu}>
         {menuOpen ? <FaTimes /> : <FaBars />}
       </div>
@@ -96,12 +114,23 @@ export default function Navbar() {
               {link.name}
             </button>
           ))}
-          <button
-            onClick={() => navigate("/contact")}
-            className="px-4 py-2 rounded-lg bg-[#39FF14] text-black font-semibold hover:scale-105 transition"
-          >
-            Join Now
-          </button>
+
+          {/* ✅ Mobile Auth Icon */}
+          {!isLoggedIn ? (
+            <button
+              onClick={() => navigate("/join")} // ✅ Navigate to signup
+              className="flex items-center justify-center w-12 h-12 rounded-full bg-[#39FF14] text-black hover:scale-110 transition"
+            >
+              <FaUser size={22} />
+            </button>
+          ) : (
+            <button
+              onClick={handleLogout}
+              className="flex items-center justify-center w-12 h-12 rounded-full bg-red-500 text-white hover:scale-110 transition"
+            >
+              <FaSignOutAlt size={22} />
+            </button>
+          )}
         </div>
       )}
     </nav>

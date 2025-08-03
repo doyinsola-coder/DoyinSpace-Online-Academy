@@ -15,18 +15,22 @@ export default function Home() {
       {/* Hero Section */}
       <section id="home" className="min-h-screen flex flex-col items-center justify-center text-center px-4">
         <motion.h1 initial="hidden" whileInView="visible" variants={fadeUp} className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-br from-[#00D4FF] to-[#39FF14] bg-clip-text text-transparent">
-          Learn Frontend Development with DoyinSpace
+          Learn Frontend Development <br /> with DoyinSpace
         </motion.h1>
         <motion.p initial="hidden" whileInView="visible" variants={fadeUp} className="text-lg md:text-xl text-gray-300 max-w-2xl mb-6">
           Master HTML, CSS, JavaScript, and React by building real-world projects.
         </motion.p>
         <motion.div initial="hidden" whileInView="visible" variants={fadeUp} className="space-x-4">
+         <Link to="/join">
           <button className="px-6 py-3 rounded-xl bg-[#00D4FF] text-black font-semibold hover:scale-105 transition">
             Start Learning
           </button>
+         </Link>
+          <Link to="/course">
           <button className="px-6 py-3 rounded-xl border border-[#39FF14] text-[#39FF14] hover:bg-[#39FF14] hover:text-black transition">
             View Courses
           </button>
+          </Link>
         </motion.div>
       </section>
 
