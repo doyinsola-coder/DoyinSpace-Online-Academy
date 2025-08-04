@@ -40,7 +40,7 @@ export default function Home() {
           Meet Your Instructor
         </motion.h2>
         <motion.p initial="hidden" whileInView="visible" variants={fadeUp} className="text-gray-400 mb-6">
-          I'm Mubeen Doyinsola Abdulateef, a Frontend Developer passionate about teaching 
+          I'm Abdulateef Doyinsola Abdulmubeen, a Frontend Developer passionate about teaching 
           and helping beginners become confident coders. You’ll learn by building 
           hands-on projects and gaining real coding experience.
         </motion.p>

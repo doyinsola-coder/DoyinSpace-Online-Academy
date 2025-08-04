@@ -13,6 +13,7 @@ import Course from "./pages/Course";
 import SignUp from "./pages/SignUp";
 import FlutterwaveTest from "./pages/FlutterwaveTest";
 import CourseDetails from "./pages/PaymentSuccess";
+import About from "./pages/About";
 
 // ✅ Import AuthProvider
 import { AuthProvider } from "./context/AuthContext";
@@ -22,24 +23,30 @@ function AppContent() {
   const [fadeOut, setFadeOut] = useState(false);
   const location = useLocation();
 
-  // ✅ Trigger loader on every route change
+  const isLandingPage = location.pathname === "/"; // ✅ only landing page uses loader
+
+  // ✅ Loader runs only on landing page
   useEffect(() => {
-    setLoading(true);
-    setFadeOut(false);
+    if (isLandingPage) {
+      setLoading(true);
+      setFadeOut(false);
 
-    const timer = setTimeout(() => setFadeOut(true), 800);
-    const removeTimer = setTimeout(() => setLoading(false), 1300);
+      const timer = setTimeout(() => setFadeOut(true), 800);
+      const removeTimer = setTimeout(() => setLoading(false), 1300);
 
-    return () => {
-      clearTimeout(timer);
-      clearTimeout(removeTimer);
-    };
-  }, [location.pathname]);
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(removeTimer);
+      };
+    } else {
+      setLoading(false);
+    }
+  }, [location.pathname, isLandingPage]);
 
   return (
     <>
-      {/* ✅ Loader overlays the page while fading */}
-      {loading && (
+      {/* ✅ Loader only on landing page */}
+      {isLandingPage && loading && (
         <div
           className={`fixed inset-0 z-50 bg-[#0A0A0A] flex items-center justify-center transition-opacity duration-700 ${
             fadeOut ? "opacity-0" : "opacity-100"
@@ -51,28 +58,30 @@ function AppContent() {
 
       <Navbar />
 
-      {/* ✅ Page Transition with AnimatePresence */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={location.pathname}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
-          className="min-h-screen"
-        >
-          <Routes location={location} key={location.pathname}>
-            <Route path="/" element={<Home />} />
-            <Route path="/course" element={<Course />} />
-            <Route path="/course/:id" element={<SingleCourse />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/join" element={<SignUp />} />
-            <Route path="/flutterwave-test" element={<FlutterwaveTest />} />
-            <Route path="/details" element={<CourseDetails />} />
-          </Routes>
-        </motion.div>
-      </AnimatePresence>
-
+      {/* ✅ Prevent white flash by wrapping in relative container */}
+      <div className="relative min-h-screen bg-[#0A0A0A]">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            className="absolute w-full min-h-screen top-0 left-0"
+          >
+            <Routes location={location} key={location.pathname}>
+              <Route path="/" element={<Home />} />
+              <Route path="/course" element={<Course />} />
+              <Route path="/course/:id" element={<SingleCourse />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/join" element={<SignUp />} />
+              <Route path="/flutterwave-test" element={<FlutterwaveTest />} />
+              <Route path="/details" element={<CourseDetails />} />
+              <Route path="/about" element={<About />} />
+            </Routes>
+          </motion.div>
+        </AnimatePresence>
+      </div>
       <Footer />
     </>
   );
@@ -81,7 +90,6 @@ function AppContent() {
 export default function App() {
   return (
     <BrowserRouter>
-      {/* ✅ Wrap App with AuthProvider */}
       <AuthProvider>
         <AppContent />
       </AuthProvider>

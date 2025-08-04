@@ -46,7 +46,7 @@ export default function Navbar() {
   const links = [
     { name: "Home", scroll: true },
     { name: "Courses", path: "/course" },
-    { name: "About", scroll: true },
+    { name: "About", path: "/about" },
     { name: "Contact", path: "/contact" },
   ];
 
